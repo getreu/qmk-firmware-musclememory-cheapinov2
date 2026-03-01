@@ -197,13 +197,13 @@ void fix_encoder_action(matrix_row_t current_matrix[]) {
         if (colABPressed) {
             // A+B followed by A means clockwise
             colABPressed = false;
-            encoder_queue_event(0, true);
+            encoder_queue_event(0, false);
         }
     } else if (colB) {
         if (colABPressed) {
             // A+B followed by B means counter-clockwise
             colABPressed = false;
-            encoder_queue_event(0, false);
+            encoder_queue_event(0, true);
         }
     }
 
