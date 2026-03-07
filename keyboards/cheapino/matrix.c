@@ -114,7 +114,7 @@ void matrix_init_custom(void) {
     // initialize key pins
     unselect_cols();
     unselect_rows();
-    debounce_init();
+    debounce_init(MATRIX_ROWS);
 }
 
 void store_old_matrix(matrix_row_t current_matrix[]) {
@@ -145,4 +145,3 @@ bool matrix_scan_custom(matrix_row_t current_matrix[]) {
 
     return has_matrix_changed(current_matrix);
 }
-
