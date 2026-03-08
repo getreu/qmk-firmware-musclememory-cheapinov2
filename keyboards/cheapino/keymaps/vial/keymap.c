@@ -147,8 +147,8 @@ void eeconfig_init_user(void) {
     // Combo 0: Middle thumb keys (Space + Enter) -> Layer 7
     {
         vial_combo_entry_t combo = {0};
-        combo.input[0] = KC_SPC;  // Left middle thumb (base keycode)
-        combo.input[1] = KC_ENT;  // Right middle thumb (base keycode)
+        combo.input[0] = LGUI_T(KC_SPC);  // Left middle thumb - MUST match keymap exactly
+        combo.input[1] = LGUI_T(KC_ENT);  // Right middle thumb - MUST match keymap exactly
         combo.output = MO(_L7);
         dynamic_keymap_set_combo(0, &combo);
     }
@@ -156,8 +156,8 @@ void eeconfig_init_user(void) {
     // Combo 1: V + Space -> Layer 7
     {
         vial_combo_entry_t combo = {0};
-        combo.input[0] = KC_V;  // Base keycode
-        combo.input[1] = KC_SPC;  // Base keycode
+        combo.input[0] = RGUI_T(KC_V);  // MUST match keymap exactly
+        combo.input[1] = LGUI_T(KC_SPC);  // MUST match keymap exactly
         combo.output = MO(_L7);
         dynamic_keymap_set_combo(1, &combo);
     }
@@ -165,8 +165,8 @@ void eeconfig_init_user(void) {
     // Combo 2: M + Enter -> Layer 7
     {
         vial_combo_entry_t combo = {0};
-        combo.input[0] = KC_M;  // Base keycode
-        combo.input[1] = KC_ENT;  // Base keycode
+        combo.input[0] = RGUI_T(KC_M);  // MUST match keymap exactly
+        combo.input[1] = LGUI_T(KC_ENT);  // MUST match keymap exactly
         combo.output = MO(_L7);
         dynamic_keymap_set_combo(2, &combo);
     }
@@ -174,8 +174,8 @@ void eeconfig_init_user(void) {
     // Combo 3: ESC + Backspace -> Toggle Layer 3
     {
         vial_combo_entry_t combo = {0};
-        combo.input[0] = KC_ESC;  // Base keycode
-        combo.input[1] = KC_BSPC;  // Base keycode
+        combo.input[0] = LT(_L6,KC_ESC);  // MUST match keymap exactly
+        combo.input[1] = LT(_L5,KC_BSPC);  // MUST match keymap exactly
         combo.output = TG(_L3);
         dynamic_keymap_set_combo(3, &combo);
     }
@@ -273,7 +273,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 
 [_L7] = LAYOUT_split_3x5_3(
-    KC_NO,   KC_NO,   RGB_VAD, RGB_VAI, RGB_TOG, KC_TRNS, KC_NO,   KC_BRID, KC_BRIU, KC_NO,   KC_NO,
+    QK_CLEAR_EEPROM,   KC_NO,   RGB_VAD, RGB_VAI, RGB_TOG, KC_TRNS, KC_NO,   KC_BRID, KC_BRIU, KC_NO,   KC_NO,
     KC_NO,   KC_NO,   RGB_HUD, RGB_HUI, RGB_MOD,          KC_MUTE, KC_VOLD, KC_VOLU, KC_NO,   KC_NO,
     KC_NO,   KC_NO,   RGB_SAD, RGB_SAI, RGB_RMOD,         KC_MPLY, KC_MPRV, KC_MNXT, KC_NO,   KC_NO,
     KC_TRNS, KC_TRNS, KC_TRNS,                            KC_TRNS, KC_TRNS, KC_TRNS

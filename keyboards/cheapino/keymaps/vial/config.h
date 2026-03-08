@@ -9,7 +9,7 @@
 
 // Vial tap dance and combo support
 #define VIAL_TAP_DANCE_ENTRIES 4
-#define VIAL_COMBO_ENTRIES 12
+#define VIAL_COMBO_ENTRIES 8
 
 // Support 8 layers (BASE through L7)
-#define DYNAMIC_KEYMAP_LAYER_COUNT 10
+#define DYNAMIC_KEYMAP_LAYER_COUNT 8
