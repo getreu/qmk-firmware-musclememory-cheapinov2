@@ -17,11 +17,8 @@
  * VIAL-OPTIMIZED KEYMAP FOR CHEAPINO
  * 
  * This is a Vial-friendly version based on the musclememory keymap.
- * Key differences from musclememory:
- * - Uses standard RGB keycodes (RGB_TOG, RGB_MOD, etc.) instead of custom ones
- * - Simplified thumb cluster without tap dance
- * - Combos and tap dance can be configured via Vial GUI
- * - Layer RGB indicators still work
+ * Tap dance and combos are configured via Vial's dynamic system.
+ * Default values are loaded on EEPROM reset via eeconfig_init_user().
  */
 
 /**
@@ -62,8 +59,6 @@ enum layers {
 #define COLOR_LAVENDER  210, 130, 15
 #define COLOR_RED       0, 255, 12
 #define COLOR_PINK      230, 170, 10
-
-
 
 /**
  * Initialize RGB color capture
@@ -144,11 +139,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 /**
- * EEPROM INITIALIZATION - Set Default Combos
+ * EEPROM INITIALIZATION - Set Default Combos and Tap Dances
  * This runs when EEPROM is reset (first flash or reset command)
+ * 
+ * Pattern: Set up defaults just like in musclememory, but using Vial's dynamic system.
+ * Combos and tap dances will be stored in EEPROM and can be reconfigured via Vial GUI.
  */
-#ifdef VIAL_COMBO_ENABLE
+#if defined(VIAL_COMBO_ENABLE) || defined(VIAL_TAP_DANCE_ENABLE)
 void eeconfig_init_user(void) {
+#ifdef VIAL_COMBO_ENABLE
     // Combo 0: Middle thumb keys (Space + Enter) -> Layer 7
     {
         vial_combo_entry_t combo = {0};
@@ -207,38 +206,39 @@ void eeconfig_init_user(void) {
         dynamic_keymap_set_combo(5, &combo);
     }
     
-    // Combo 6: Skipped - configure via Vial GUI
-    // The left outer thumb has OSL(_L4) which is a layer key with no base keycode.
-    // To create a combo with this key, use the Vial GUI to configure combo slot 6.
-    // Leave this slot empty for user customization.
+    // Combo 6: Reserved for user customization via Vial GUI
+    // Combo 7: Reserved for user customization via Vial GUI
+#endif
 
 #ifdef VIAL_TAP_DANCE_ENABLE
-    // Tap Dance 0: Right outer thumb - Menu key
-    // Single tap = KC_APP, Double tap = Toggle Layer 2
+    // Tap Dance 0: Right outer thumb - Menu key (matching musclememory behavior)
+    // Single tap = KC_APP (context menu), Double tap = Toggle Layer 2
+    // Note: Vial's dynamic tap dance cannot implement the layer-aware "clear layers" 
+    // behavior from musclememory, but provides the core tap/double-tap functionality.
     {
         vial_tap_dance_entry_t td = {0};
-        td.on_tap = KC_APP;
-        td.on_hold = KC_APP;
-        td.on_double_tap = TG(_L2);
-        td.on_tap_hold = KC_APP;
-        td.custom_tapping_term = 350;
+        td.on_tap = KC_APP;           // Single tap: Context menu
+        td.on_hold = KC_APP;          // Hold: Context menu
+        td.on_double_tap = TG(_L2);   // Double tap: Toggle Layer 2
+        td.on_tap_hold = KC_APP;      // Tap then hold: Context menu
+        td.custom_tapping_term = 350; // Match musclememory's 350ms tapping term
         dynamic_keymap_set_tap_dance(0, &td);
     }
+    
+    // Tap Dance 1-3: Reserved for user customization via Vial GUI
 #endif
     
-    // Reload combos to activate them
+    // Reload Vial configuration to activate defaults
     vial_init();
 }
 #endif
-
-
-
 
 /**
  * KEYMAP DATA
  * Layout for each layer
  * 
- * Note: Tap dance and combos can be configured via Vial GUI
+ * Note: Right outer thumb uses TD(0) - configured in eeconfig_init_user() above
+ *       Combos are also configured in eeconfig_init_user() to match musclememory defaults
  */
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
