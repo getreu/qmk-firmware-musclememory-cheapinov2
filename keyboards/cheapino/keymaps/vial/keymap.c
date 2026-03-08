@@ -8,6 +8,11 @@
 #include "dynamic_keymap.h"
 #endif
 
+#ifdef VIAL_TAP_DANCE_ENABLE
+#include "vial.h"
+#include "dynamic_keymap.h"
+#endif
+
 /**
  * VIAL-OPTIMIZED KEYMAP FOR CHEAPINO
  * 
@@ -206,6 +211,20 @@ void eeconfig_init_user(void) {
     // The left outer thumb has OSL(_L4) which is a layer key with no base keycode.
     // To create a combo with this key, use the Vial GUI to configure combo slot 6.
     // Leave this slot empty for user customization.
+
+#ifdef VIAL_TAP_DANCE_ENABLE
+    // Tap Dance 0: Right outer thumb - Menu key
+    // Single tap = KC_APP, Double tap = Toggle Layer 2
+    {
+        vial_tap_dance_entry_t td = {0};
+        td.on_tap = KC_APP;
+        td.on_hold = KC_APP;
+        td.on_double_tap = TG(_L2);
+        td.on_tap_hold = KC_APP;
+        td.custom_tapping_term = 350;
+        dynamic_keymap_set_tap_dance(0, &td);
+    }
+#endif
     
     // Reload combos to activate them
     vial_init();
@@ -227,7 +246,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_Q,         KC_W,         KC_E,         KC_R,         KC_T,         KC_MUTE,  KC_Y,         KC_U,         KC_I,         KC_O,         KC_P,
     LSFT_T(KC_A), RALT_T(KC_S), LT(_L3,KC_D), LCTL_T(KC_F), LALT_T(KC_G),           LALT_T(KC_H), RCTL_T(KC_J), LT(_L3,KC_K), RALT_T(KC_L), RSFT_T(KC_SCLN),
     KC_Z,         KC_X,         KC_C,         RGUI_T(KC_V), KC_B,                   KC_N,         RGUI_T(KC_M), KC_COMM,      KC_DOT,       KC_SLSH,
-    OSL(_L4),     LT(_L6,KC_ESC), LGUI_T(KC_SPC),                                   LGUI_T(KC_ENT), LT(_L5,KC_BSPC), KC_APP
+    OSL(_L4),     LT(_L6,KC_ESC), LGUI_T(KC_SPC),                                   LGUI_T(KC_ENT), LT(_L5,KC_BSPC), TD(0)
 ),
 
 [_L1] = LAYOUT_split_3x5_3(
