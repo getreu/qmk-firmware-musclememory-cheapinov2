@@ -206,7 +206,24 @@ void eeconfig_init_user(void) {
         dynamic_keymap_set_combo(5, &combo);
     }
 
-    // Combo 6: Reserved for user customization via Vial GUI
+    // Combo 6: outer thumb keys -> Caps Lock
+    {
+        vial_combo_entry_t combo = {0};
+        combo.input[0] = OSL(_L4);         // MUST match keymap exactly
+        combo.input[1] = TD(0);            // MUST match keymap exactly
+        combo.output = KC_CAPS_LOCK;
+        dynamic_keymap_set_combo(6, &combo);
+    }
+
+    // Combo 7: outer thumb keys -> Caps Lock
+    {
+        vial_combo_entry_t combo = {0};
+        combo.input[0] = OSL(_L4);         // MUST match keymap exactly
+        combo.input[1] = TD(1);            // MUST match keymap exactly
+        combo.output = KC_CAPS_LOCK;
+        dynamic_keymap_set_combo(7, &combo);
+    }
+
     // Combo 7: Reserved for user customization via Vial GUI
 #endif
 
