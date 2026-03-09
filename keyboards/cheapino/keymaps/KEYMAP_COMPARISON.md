@@ -139,15 +139,7 @@ If you're currently using `musclememory` and want to try `vial`:
 1. **Backup your current firmware** (you can always go back)
 2. **Set up vial-qmk** repository
 3. **Flash the vial keymap**
-4. **Recreate your combos** in Vial GUI:
-   - V+Space → MO(7)
-   - M+Enter → MO(7)
-   - ESC+Backspace → TG(3)
-   - Q+W+E+T → QK_BOOT
-   - Y+I+O+P → QK_BOOT
-   - OSL(4)+APP → KC_CAPS
-
-5. **Configure tap dance** (if you miss the menu key behavior)
+4. **Clear EEPROM**
 
 ### From vial to musclememory
 
@@ -161,28 +153,28 @@ If you want more control or a smaller firmware:
 ## Which Should You Choose?
 
 ### Choose `musclememory` if you:
-- ✅ Want maximum firmware control
-- ✅ Prefer code-based configuration
-- ✅ Need the sophisticated tap dance behavior
-- ✅ Use official QMK repository/tooling
-- ✅ Want smaller firmware size
-- ✅ Rarely change your keymap
-- ✅ Are comfortable with C programming
+- Want maximum firmware control
+- Prefer code-based configuration
+- Need the sophisticated tap dance behavior
+- Use official QMK repository/tooling
+- Want smaller firmware size
+- Rarely change your keymap
+- Are comfortable with C programming
 
 ### Choose `vial` if you:
-- ✅ Want to configure via GUI
-- ✅ Experiment with layouts frequently
-- ✅ Are new to QMK
-- ✅ Don't want to set up compilation environment
-- ✅ Like visual feedback when configuring
-- ✅ Want to save/load different configurations
-- ✅ Prefer standard QMK keycodes
+- Want to configure via GUI
+- Experiment with layouts frequently
+- Are new to QMK
+- Don't want to set up compilation environment
+- Like visual feedback when configuring
+- Want to save/load different configurations
+- Prefer standard QMK keycodes
 
 ## Can I Use Both?
 
 **Yes!** You can:
 1. Keep both keymaps in your repository
-2. Compile either one as needed
+2. Compile either one as needed (vial-qmk can compile both)
 3. Flash different versions to test
 4. Switch between them anytime
 
