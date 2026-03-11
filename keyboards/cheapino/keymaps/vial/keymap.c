@@ -20,35 +20,22 @@
  * Tap dance and combos are configured via Vial's dynamic system.
  * Default values are loaded on EEPROM reset via eeconfig_init_user().
  */
-
 /**
  * RGBLIGHT CONFIGURATION & STORAGE
  * Capture and restore dynamic color from EEPROM.
  */
-extern rgblight_config_t rgblight_config;
-
+// Define a custom structure to group HSV values
 typedef struct {
     uint8_t h;
     uint8_t s;
     uint8_t v;
 } custom_hsv_t;
-
 static custom_hsv_t old_color;
-static bool initial_capture_done = false;
 
 /**
  * LAYER DEFINITIONS
  */
-enum layers {
-    _BASE = 0,
-    _L1,
-    _L2,
-    _L3,
-    _L4,
-    _L5,
-    _L6,
-    _L7
-};
+enum layers { _BASE = 0, _L1, _L2, _L3, _L4, _L5, _L6, _L7 };
 
 /**
  * COLOR DEFINITIONS
@@ -59,15 +46,26 @@ enum layers {
 #define COLOR_LAVENDER  210, 130, 15
 #define COLOR_RED       0, 255, 12
 #define COLOR_PINK      230, 170, 10
+#define COLOR_WHITE     0, 0, 10
 
 /**
- * Initialize RGB color capture
+ * Initialize RGB color capture and force defaults if needed
  */
 void keyboard_post_init_user(void) {
-    old_color.h = rgblight_config.hue;
-    old_color.s = rgblight_config.sat;
-    old_color.v = rgblight_config.val;
-    initial_capture_done = true;
+    // 1. Enable RGB and set mode without saving to EEPROM yet
+    rgblight_enable_noeeprom();
+    rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+
+    // 2. RELIABILITY CHECK: If the keyboard is currently Red (Hue 0),
+    // it means the EEPROM reset didn't work. Force it to your Green.
+    if (rgblight_get_hue() == 0) {
+        rgblight_sethsv(85, 255, 40); // This writes it to EEPROM
+    }
+
+    // 3. Sync the tracking variable so layer switching works immediately
+    old_color.h = rgblight_get_hue();
+    old_color.s = rgblight_get_sat();
+    old_color.v = rgblight_get_val();
 }
 
 /**
@@ -75,14 +73,6 @@ void keyboard_post_init_user(void) {
  * Changes RGB color based on active layer
  */
 layer_state_t layer_state_set_user(layer_state_t state) {
-    // Capture color before layer change
-    if (!initial_capture_done) {
-        old_color.h = rgblight_config.hue;
-        old_color.s = rgblight_config.sat;
-        old_color.v = rgblight_config.val;
-        initial_capture_done = true;
-    }
-
     switch (get_highest_layer(state)) {
         case _L2:
             rgblight_sethsv_noeeprom(COLOR_RED);
@@ -107,7 +97,6 @@ layer_state_t layer_state_set_user(layer_state_t state) {
             rgblight_sethsv_noeeprom(old_color.h, old_color.s, old_color.v);
             break;
     }
-    rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
     return state;
 }
 
@@ -115,8 +104,8 @@ layer_state_t layer_state_set_user(layer_state_t state) {
  * Capture color changes when on base layer
  */
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    // Update saved color when RGB is adjusted on base layer
-    if (get_highest_layer(layer_state) == _BASE && record->event.pressed) {
+    // Update saved color when RGB is adjusted
+    if (record->event.pressed) {
         switch (keycode) {
             case RGB_TOG:
             case RGB_MOD:
@@ -127,16 +116,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             case RGB_SAD:
             case RGB_VAI:
             case RGB_VAD:
-                // Wait a bit for the change to apply, then capture
-                wait_ms(10);
-                old_color.h = rgblight_config.hue;
-                old_color.s = rgblight_config.sat;
-                old_color.v = rgblight_config.val;
+                old_color.h = rgblight_get_hue();
+                old_color.s = rgblight_get_sat();
+                old_color.v = rgblight_get_val();
                 break;
         }
     }
     return true;
 }
+
 
 /**
  * EEPROM INITIALIZATION - Set Default Combos and Tap Dances
@@ -145,123 +133,82 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
  * Pattern: Set up defaults just like in musclememory, but using Vial's dynamic system.
  * Combos and tap dances will be stored in EEPROM and can be reconfigured via Vial GUI.
  */
+/**
+ * EEPROM INITIALIZATION - Full Vial & RGB Integration
+ * This runs when EEPROM is reset to load your screenshot defaults.
+ */
 #if defined(VIAL_COMBO_ENABLE) || defined(VIAL_TAP_DANCE_ENABLE)
 void eeconfig_init_user(void) {
+
 #ifdef VIAL_COMBO_ENABLE
-    // Combo 0: Middle thumb keys (Space + Enter) -> Layer 7
-    {
-        vial_combo_entry_t combo = {0};
-        combo.input[0] = LGUI_T(KC_SPC);  // Left middle thumb - MUST match keymap exactly
-        combo.input[1] = LGUI_T(KC_ENT);  // Right middle thumb - MUST match keymap exactly
-        combo.output = MO(_L7);
-        dynamic_keymap_set_combo(0, &combo);
-    }
+    // 2. Load Dynamic Combos (These write to EEPROM)
+    vial_combo_entry_t combo = {0};
+
+    // Combo 0: Space + Enter -> Layer 7
+    combo.input[0] = LGUI_T(KC_SPC);
+    combo.input[1] = LGUI_T(KC_ENT);
+    combo.output = MO(_L7);
+    dynamic_keymap_set_combo(0, &combo);
 
     // Combo 1: V + Space -> Layer 7
-    {
-        vial_combo_entry_t combo = {0};
-        combo.input[0] = RGUI_T(KC_V);  // MUST match keymap exactly
-        combo.input[1] = LGUI_T(KC_SPC);  // MUST match keymap exactly
-        combo.output = MO(_L7);
-        dynamic_keymap_set_combo(1, &combo);
-    }
+    combo.input[0] = RGUI_T(KC_V);
+    combo.input[1] = LGUI_T(KC_SPC);
+    combo.output = MO(_L7);
+    dynamic_keymap_set_combo(1, &combo);
 
     // Combo 2: M + Enter -> Layer 7
-    {
-        vial_combo_entry_t combo = {0};
-        combo.input[0] = RGUI_T(KC_M);  // MUST match keymap exactly
-        combo.input[1] = LGUI_T(KC_ENT);  // MUST match keymap exactly
-        combo.output = MO(_L7);
-        dynamic_keymap_set_combo(2, &combo);
-    }
+    combo.input[0] = RGUI_T(KC_M);
+    combo.input[1] = LGUI_T(KC_ENT);
+    combo.output = MO(_L7);
+    dynamic_keymap_set_combo(2, &combo);
 
     // Combo 3: ESC + Backspace -> Toggle Layer 3
-    {
-        vial_combo_entry_t combo = {0};
-        combo.input[0] = LT(_L6,KC_ESC);  // MUST match keymap exactly
-        combo.input[1] = LT(_L5,KC_BSPC);  // MUST match keymap exactly
-        combo.output = TG(_L3);
-        dynamic_keymap_set_combo(3, &combo);
-    }
+    combo.input[0] = LT(_L6, KC_ESC);
+    combo.input[1] = LT(_L5, KC_BSPC);
+    combo.output = TG(_L3);
+    dynamic_keymap_set_combo(3, &combo);
 
     // Combo 4: Q+W+E+T -> Bootloader
-    {
-        vial_combo_entry_t combo = {0};
-        combo.input[0] = KC_Q;
-        combo.input[1] = KC_W;
-        combo.input[2] = KC_E;
-        combo.input[3] = KC_T;
-        combo.output = QK_BOOT;
-        dynamic_keymap_set_combo(4, &combo);
-    }
+    combo.input[0] = KC_Q; combo.input[1] = KC_W; combo.input[2] = KC_E; combo.input[3] = KC_T;
+    combo.output = QK_BOOT;
+    dynamic_keymap_set_combo(4, &combo);
 
     // Combo 5: Y+I+O+P -> Bootloader
-    {
-        vial_combo_entry_t combo = {0};
-        combo.input[0] = KC_Y;
-        combo.input[1] = KC_I;
-        combo.input[2] = KC_O;
-        combo.input[3] = KC_P;
-        combo.output = QK_BOOT;
-        dynamic_keymap_set_combo(5, &combo);
-    }
+    combo.input[0] = KC_Y; combo.input[1] = KC_I; combo.input[2] = KC_O; combo.input[3] = KC_P;
+    combo.output = QK_BOOT;
+    dynamic_keymap_set_combo(5, &combo);
 
-    // Combo 6: outer thumb keys -> Caps Lock
-    {
-        vial_combo_entry_t combo = {0};
-        combo.input[0] = OSL(_L4);         // MUST match keymap exactly
-        combo.input[1] = TD(0);            // MUST match keymap exactly
-        combo.output = KC_CAPS_LOCK;
-        dynamic_keymap_set_combo(6, &combo);
-    }
+    // Combo 6 & 7: Outer thumbs -> Caps Lock
+    combo.input[0] = OSL(_L4); combo.input[1] = TD(0);
+    combo.output = KC_CAPS_LOCK;
+    dynamic_keymap_set_combo(6, &combo);
 
-    // Combo 7: outer thumb keys -> Caps Lock
-    {
-        vial_combo_entry_t combo = {0};
-        combo.input[0] = OSL(_L4);         // MUST match keymap exactly
-        combo.input[1] = TD(1);            // MUST match keymap exactly
-        combo.output = KC_CAPS_LOCK;
-        dynamic_keymap_set_combo(7, &combo);
-    }
-
-    // Combo 7: Reserved for user customization via Vial GUI
+    combo.input[0] = OSL(_L4); combo.input[1] = TD(1);
+    combo.output = KC_CAPS_LOCK;
+    dynamic_keymap_set_combo(7, &combo);
 #endif
 
 #ifdef VIAL_TAP_DANCE_ENABLE
-    // Tap Dance 0: Right outer thumb - Menu key (matching musclememory behavior)
-    // Single tap = KC_APP (context menu), Double tap = Toggle Layer 2
-    // Note: Vial's dynamic tap dance cannot implement the layer-aware "clear layers"
-    // behavior from musclememory, but provides the core tap/double-tap functionality.
-    {
-        vial_tap_dance_entry_t td = {0};
-        td.on_tap = KC_APP;           // Single tap: Context menu
-        td.on_hold = KC_APP;          // Hold: Context menu
-        td.on_double_tap = TG(_L2);   // Double tap: Toggle Layer 2
-        td.on_tap_hold = KC_NO;       // Ignore
-        td.custom_tapping_term = 350; // Match musclememory's 350ms tapping term
-        dynamic_keymap_set_tap_dance(0, &td);
-    }
-    {
-        vial_tap_dance_entry_t td = {0};
-        td.on_tap = TO(0);            // Single tap: to base layer
-        td.on_hold = KC_APP;          // Hold: Context menu
-        td.on_double_tap = TG(_L2);   // Double tap: Toggle Layer 2
-        td.on_tap_hold = KC_NO;       // Ignore
-        td.custom_tapping_term = 350; // Match musclememory's 350ms tapping term
-        dynamic_keymap_set_tap_dance(1, &td);
-    }
-    {
-        vial_tap_dance_entry_t td = {0};
-        td.on_tap = TO(0);            // Single tap: to base layer
-        td.on_hold = MO(_L6);         // Mouse layer
-        td.on_double_tap = KC_NO;     // Ingore
-        td.on_tap_hold = KC_NO;       // Ignore
-        td.custom_tapping_term = 350; // Match musclememory's 350ms tapping term
-        dynamic_keymap_set_tap_dance(2, &td);
-    }
+    // 4. Load Dynamic Tap Dances
+    vial_tap_dance_entry_t td = {0};
+
+    // TD 0: APP / TG(_L2)
+    td.on_tap = KC_APP; td.on_hold = KC_APP; td.on_double_tap = TG(_L2);
+    td.custom_tapping_term = 350;
+    dynamic_keymap_set_tap_dance(0, &td);
+
+    // TD 1: TO(0) / TG(_L2)
+    td.on_tap = TO(0); td.on_hold = KC_APP; td.on_double_tap = TG(_L2);
+    td.custom_tapping_term = 350;
+    dynamic_keymap_set_tap_dance(1, &td);
+
+    // TD 2: TO(0) / MO(_L6)
+    td.on_tap = TO(0); td.on_hold = MO(_L6); td.on_double_tap = KC_NO;
+    td.custom_tapping_term = 350;
+    dynamic_keymap_set_tap_dance(2, &td);
 #endif
 
-    // Reload Vial configuration to activate defaults
+    // Finalize the sync
     vial_init();
 }
 #endif
@@ -311,7 +258,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 
 [_L5] = LAYOUT_split_3x5_3(
-    KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_TRNS, KC_HOME, KC_DEL,  KC_INS,  KC_END,  KC_BSPC,
+    QK_CLEAR_EEPROM,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_TRNS, KC_HOME, KC_DEL,  KC_INS,  KC_END,  KC_BSPC,
     KC_ESC,  KC_INS,  KC_DEL,  KC_TAB,  KC_BSPC,          KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_ENT,
     KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,            KC_NO,   KC_PGDN, KC_PGUP, KC_NO,   KC_NO,
     KC_TRNS, TD(2), KC_TRNS,                              KC_TRNS, KC_TRNS, TD(1)

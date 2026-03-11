@@ -4,7 +4,6 @@
  * RGBLIGHT CONFIGURATION & STORAGE
  * Capture and restore dynamic color 'X' from EEPROM.
  */
-extern rgblight_config_t rgblight_config;
 // Define a custom structure to group HSV values
 typedef struct {
     uint8_t h;
@@ -12,66 +11,12 @@ typedef struct {
     uint8_t v;
 } custom_hsv_t;
 static custom_hsv_t old_color;
-static bool initial_capture_done = false;
 
 /**
  * LAYER DEFINITIONS
  */
 enum layers { _BASE = 0, _L1, _L2, _L3, _L4, _L5, _L6, _L7 };
 
-/**
- *
- *
- * Use LED as visual layer indicator
- *
- */
-// Standard RGB keycodes can sometimes conflict with specific hardware drivers.
-// These custom enums are used to trigger RGB functions manually via process_record_user.
-enum custom_keycodes {
-    M_RGB_TOG = SAFE_RANGE,
-    M_RGB_MOD,
-    M_RGB_RMOD,
-    M_RGB_HUI,
-    M_RGB_HUD,
-    M_RGB_SAI,
-    M_RGB_SAD,
-    M_RGB_VAI,
-    M_RGB_VAD
-};
-
-void update_old_color(void) {
-    old_color.h = rgblight_config.hue;
-    old_color.s = rgblight_config.sat;
-    old_color.v = rgblight_config.val;
-}
-
-/**
- * EVENT HANDLER: process_record_user
- */
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if (!initial_capture_done) {
-        update_old_color();
-        initial_capture_done = true;
-    }
-    if (record->event.pressed) {
-        switch (keycode) {
-            case M_RGB_TOG:  rgblight_toggle(); break;
-            case M_RGB_MOD:  rgblight_step(); break;
-            case M_RGB_RMOD: rgblight_step_reverse(); break;
-            case M_RGB_HUI:  rgblight_increase_hue(); break;
-            case M_RGB_HUD:  rgblight_decrease_hue(); break;
-            case M_RGB_SAI:  rgblight_increase_sat(); break;
-            case M_RGB_SAD:  rgblight_decrease_sat(); break;
-            case M_RGB_VAI:  rgblight_increase_val(); break;
-            case M_RGB_VAD:  rgblight_decrease_val(); break;
-            default: return true; // Process all other keys normally
-        }
-        // If an RGB key was pressed, update our saved color before returning
-        update_old_color();
-        return false;
-    }
-    return true;
-}
 /**
  * COLOR DEFINITIONS
  */
@@ -81,25 +26,71 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #define COLOR_LAVENDER  210, 130, 15
 #define COLOR_RED       0, 255, 12
 #define COLOR_PINK      230, 170, 10
+#define COLOR_WHITE     0, 0, 10
+
+/**
+ * Initialize RGB color capture
+ */
+void keyboard_post_init_user(void) {
+    rgblight_enable_noeeprom();
+    rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+}
 
 /**
  * LAYER VISUAL FEEDBACK
- * Captures current color before switch and restores it on default.
+ * Changes RGB color based on active layer
  */
 layer_state_t layer_state_set_user(layer_state_t state) {
     switch (get_highest_layer(state)) {
-        case _L2: rgblight_sethsv_noeeprom(COLOR_RED);      break;
-        case _L3: rgblight_sethsv_noeeprom(COLOR_CYAN);     break;
-        case _L4: rgblight_sethsv_noeeprom(COLOR_LAVENDER); break;
-        case _L5: rgblight_sethsv_noeeprom(COLOR_AMBER);    break;
-        case _L6: rgblight_sethsv_noeeprom(COLOR_MINT);     break;
-        case _L7: rgblight_sethsv_noeeprom(COLOR_PINK);     break;
+        case _L2:
+            rgblight_sethsv_noeeprom(COLOR_RED);
+            break;
+        case _L3:
+            rgblight_sethsv_noeeprom(COLOR_CYAN);
+            break;
+        case _L4:
+            rgblight_sethsv_noeeprom(COLOR_LAVENDER);
+            break;
+        case _L5:
+            rgblight_sethsv_noeeprom(COLOR_AMBER);
+            break;
+        case _L6:
+            rgblight_sethsv_noeeprom(COLOR_MINT);
+            break;
+        case _L7:
+            rgblight_sethsv_noeeprom(COLOR_PINK);
+            break;
         default:
+            // Restore original color on base layer
             rgblight_sethsv_noeeprom(old_color.h, old_color.s, old_color.v);
             break;
     }
-    rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
     return state;
+}
+
+/**
+ * Capture color changes when on base layer
+ */
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    // Update saved color when RGB is adjusted
+    if (record->event.pressed) {
+        switch (keycode) {
+            case RGB_TOG:
+            case RGB_MOD:
+            case RGB_RMOD:
+            case RGB_HUI:
+            case RGB_HUD:
+            case RGB_SAI:
+            case RGB_SAD:
+            case RGB_VAI:
+            case RGB_VAD:
+                old_color.h = rgblight_get_hue();
+                old_color.s = rgblight_get_sat();
+                old_color.v = rgblight_get_val();
+                break;
+        }
+    }
+    return true;
 }
 
 /**
@@ -228,9 +219,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 
 [_L7] = LAYOUT_split_3x5_3(
-    QK_CLEAR_EEPROM,   KC_NO,   M_RGB_VAD, M_RGB_VAI, M_RGB_TOG, KC_TRNS,  KC_NO,   KC_BRID, KC_BRIU, KC_NO, KC_NO,
-    KC_NO,   KC_NO,   M_RGB_HUD, M_RGB_HUI, M_RGB_MOD,           KC_MUTE, KC_VOLD, KC_VOLU, KC_NO, KC_NO,
-    KC_NO,   KC_NO,   M_RGB_SAD, M_RGB_SAI, M_RGB_RMOD,          KC_MPLY, KC_MPRV, KC_MNXT, KC_NO, KC_NO,
+    QK_CLEAR_EEPROM,   KC_NO,   RGB_VAD, RGB_VAI, RGB_TOG, KC_TRNS,  KC_NO,   KC_BRID, KC_BRIU, KC_NO, KC_NO,
+    KC_NO,   KC_NO,   RGB_HUD, RGB_HUI, RGB_MOD,           KC_MUTE, KC_VOLD, KC_VOLU, KC_NO, KC_NO,
+    KC_NO,   KC_NO,   RGB_SAD, RGB_SAI, RGB_RMOD,          KC_MPLY, KC_MPRV, KC_MNXT, KC_NO, KC_NO,
     KC_TRNS, LT(_L6, KC_NO), KC_TRNS,           KC_TRNS, KC_TRNS, KC_TRNS
 )
 };
