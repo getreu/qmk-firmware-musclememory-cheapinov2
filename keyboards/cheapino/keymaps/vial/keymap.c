@@ -20,6 +20,7 @@
  * Tap dance and combos are configured via Vial's dynamic system.
  * Default values are loaded on EEPROM reset via eeconfig_init_user().
  */
+
 /**
  * RGBLIGHT CONFIGURATION & STORAGE
  * Capture and restore dynamic color from EEPROM.
@@ -49,23 +50,11 @@ enum layers { _BASE = 0, _L1, _L2, _L3, _L4, _L5, _L6, _L7 };
 #define COLOR_WHITE     0, 0, 10
 
 /**
- * Initialize RGB color capture and force defaults if needed
+ * Initialize RGB color capture
  */
 void keyboard_post_init_user(void) {
-    // 1. Enable RGB and set mode without saving to EEPROM yet
     rgblight_enable_noeeprom();
     rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
-
-    // 2. RELIABILITY CHECK: If the keyboard is currently Red (Hue 0),
-    // it means the EEPROM reset didn't work. Force it to your Green.
-    if (rgblight_get_hue() == 0) {
-        rgblight_sethsv(85, 255, 40); // This writes it to EEPROM
-    }
-
-    // 3. Sync the tracking variable so layer switching works immediately
-    old_color.h = rgblight_get_hue();
-    old_color.s = rgblight_get_sat();
-    old_color.v = rgblight_get_val();
 }
 
 /**
@@ -124,7 +113,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
     return true;
 }
-
 
 /**
  * EEPROM INITIALIZATION - Set Default Combos and Tap Dances
@@ -258,24 +246,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 
 [_L5] = LAYOUT_split_3x5_3(
-    QK_CLEAR_EEPROM,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_TRNS, KC_HOME, KC_DEL,  KC_INS,  KC_END,  KC_BSPC,
+    KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,  QK_CLEAR_EEPROM,  KC_HOME, KC_DEL,  KC_INS,  KC_END,  KC_BSPC,
     KC_ESC,  KC_INS,  KC_DEL,  KC_TAB,  KC_BSPC,          KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_ENT,
     KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,            KC_NO,   KC_PGDN, KC_PGUP, KC_NO,   KC_NO,
     KC_TRNS, TD(2), KC_TRNS,                              KC_TRNS, KC_TRNS, TD(1)
 ),
 
 [_L6] = LAYOUT_split_3x5_3(
-    KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_TRNS, KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
+    KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,  QK_BOOT,  KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
     MS_BTN5, MS_BTN1, MS_BTN3, MS_BTN2, MS_BTN4,          MS_LEFT, MS_DOWN, MS_UP,   MS_RGHT, MS_BTN1,
     KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,            MS_WHLL, MS_WHLD, MS_WHLU, MS_WHLR, KC_NO,
     KC_TRNS, TD(2), KC_TRNS,                              KC_TRNS, KC_TRNS, TD(1)
 ),
 
 [_L7] = LAYOUT_split_3x5_3(
-    QK_CLEAR_EEPROM,   KC_NO,   RGB_VAD, RGB_VAI, RGB_TOG, KC_TRNS, KC_NO,   KC_BRID, KC_BRIU, KC_NO,   KC_NO,
-    KC_NO,   KC_NO,   RGB_HUD, RGB_HUI, RGB_MOD,          KC_MUTE, KC_VOLD, KC_VOLU, KC_NO,   KC_NO,
-    KC_NO,   KC_NO,   RGB_SAD, RGB_SAI, RGB_RMOD,         KC_MPLY, KC_MPRV, KC_MNXT, KC_NO,   KC_NO,
+    QK_CLEAR_EEPROM, KC_NO, RGB_VAD, RGB_VAI, RGB_TOG, KC_NO, KC_NO,   KC_BRID, KC_BRIU, KC_NO,   KC_NO,
+    QK_BOOT,         KC_NO, RGB_HUD, RGB_HUI, KC_NO,          KC_MUTE, KC_VOLD, KC_VOLU, KC_NO,   KC_NO,
+    QK_REBOOT, KC_NO,   RGB_SAD, RGB_SAI, KC_NO,           KC_MPLY, KC_MPRV, KC_MNXT, KC_NO,   KC_NO,
     KC_TRNS, TD(2), KC_TRNS,                              KC_TRNS, KC_TRNS, TD(1)
 )
-
 };

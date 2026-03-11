@@ -2,7 +2,7 @@
 
 /**
  * RGBLIGHT CONFIGURATION & STORAGE
- * Capture and restore dynamic color 'X' from EEPROM.
+ * Capture and restore dynamic color from EEPROM.
  */
 // Define a custom structure to group HSV values
 typedef struct {
@@ -205,24 +205,24 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 
 [_L5] = LAYOUT_split_3x5_3(
-    KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_TRNS, KC_HOME,  KC_DEL,  KC_INS,  KC_END,  KC_BSPC,
-    KC_ESC,  KC_INS,  KC_DEL,  KC_TAB,  KC_BSPC, KC_LEFT,  KC_DOWN, KC_UP,   KC_RGHT, KC_ENT,
-    KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,    KC_PGDN, KC_PGUP, KC_NO,   KC_NO,
-    KC_TRNS, LT(_L6, KC_NO), KC_TRNS,           KC_TRNS, KC_TRNS, KC_TRNS
+    KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,  QK_CLEAR_EEPROM,  KC_HOME, KC_DEL,  KC_INS,  KC_END,  KC_BSPC,
+    KC_ESC,  KC_INS,  KC_DEL,  KC_TAB,  KC_BSPC,          KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_ENT,
+    KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,            KC_NO,   KC_PGDN, KC_PGUP, KC_NO,   KC_NO,
+    KC_TRNS, TD(2), KC_TRNS,                              KC_TRNS, KC_TRNS, TD(1)
 ),
 
 [_L6] = LAYOUT_split_3x5_3(
-    KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_TRNS, KC_NO,    KC_NO,   KC_NO,   KC_NO,   KC_NO,
-    MS_BTN5, MS_BTN1, MS_BTN3, MS_BTN2, MS_BTN4, MS_LEFT,  MS_DOWN, MS_UP,   MS_RGHT, MS_BTN1,
-    KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   MS_WHLL,  MS_WHLD, MS_WHLU, MS_WHLR, KC_NO,
-    KC_TRNS, LT(_L6, KC_NO), KC_TRNS,           KC_TRNS, KC_TRNS, KC_TRNS
+    KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,  QK_BOOT,  KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
+    MS_BTN5, MS_BTN1, MS_BTN3, MS_BTN2, MS_BTN4,          MS_LEFT, MS_DOWN, MS_UP,   MS_RGHT, MS_BTN1,
+    KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,            MS_WHLL, MS_WHLD, MS_WHLU, MS_WHLR, KC_NO,
+    KC_TRNS, TD(2), KC_TRNS,                              KC_TRNS, KC_TRNS, TD(1)
 ),
 
 [_L7] = LAYOUT_split_3x5_3(
-    QK_CLEAR_EEPROM,   KC_NO,   RGB_VAD, RGB_VAI, RGB_TOG, KC_TRNS,  KC_NO,   KC_BRID, KC_BRIU, KC_NO, KC_NO,
-    KC_NO,   KC_NO,   RGB_HUD, RGB_HUI, RGB_MOD,           KC_MUTE, KC_VOLD, KC_VOLU, KC_NO, KC_NO,
-    KC_NO,   KC_NO,   RGB_SAD, RGB_SAI, RGB_RMOD,          KC_MPLY, KC_MPRV, KC_MNXT, KC_NO, KC_NO,
-    KC_TRNS, LT(_L6, KC_NO), KC_TRNS,           KC_TRNS, KC_TRNS, KC_TRNS
+    QK_CLEAR_EEPROM, KC_NO, RGB_VAD, RGB_VAI, RGB_TOG, KC_NO, KC_NO,   KC_BRID, KC_BRIU, KC_NO,   KC_NO,
+    QK_BOOT,         KC_NO, RGB_HUD, RGB_HUI, KC_NO,          KC_MUTE, KC_VOLD, KC_VOLU, KC_NO,   KC_NO,
+    QK_REBOOT, KC_NO,   RGB_SAD, RGB_SAI, KC_NO,           KC_MPLY, KC_MPRV, KC_MNXT, KC_NO,   KC_NO,
+    KC_TRNS, TD(2), KC_TRNS,                              KC_TRNS, KC_TRNS, TD(1)
 )
 };
 
