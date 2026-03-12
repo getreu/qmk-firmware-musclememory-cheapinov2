@@ -26,7 +26,7 @@ This firmware implements the [Muscle memory friendly home row mods layout](https
 4.  **Flash to Cheapino (RP2040):**
     * **Method 1 (Physical Button):** Hold the right button on the RP2040 controller while 
       plugging in the USB cable.
-    * **Method 2 (Keycode):** Press the `QK_BOOT` combination (**Q+W+E+T** or **Y+I+O+P**).
+    *   **Method 2 (Keycode):** Hold the middle thumb key on the left side and press the rotary knob.
     * Drag and drop the `.uf2` file onto the `RPI-RP2` drive.
 
 
@@ -60,17 +60,13 @@ Clearing the EEPROM resets all persistent settings (RGB configurations, Vial key
 In this firmware, the clear function is hard-mapped to specific keys to enable a reset without the GUI:
 
 1.  **Keycode Position:**
-    * **Layer 7:** The top-left key (corresponds to `Q` on the base layer).
-    * **Layer 5:** The **Rotary Encoder Press** (the physical button between the halves).
+    *   **Layer 5:** The **Rotary Encoder Press** (the physical button between the halves).
 2.  **Accessing the Layer:**
-    * **Layer 7:** Via a thumb combo: `Space + Enter`, `V + Space`, or `M + Enter`.
-    * **Layer 5:** Hold the **Backspace** thumb key on the right half.
+    *   **Layer 5:** Hold the **Backspace** thumb key on the right half.
 3.  **Triggering the Reset:**
-    * **Via Layer 7:** Hold the Layer 7 combo and tap **Q**.
-    * **Via Layer 5:** Hold the **Backspace** key and press the **Rotary Encoder** down.
+    *   **Via Layer 5:** Hold the **Backspace** key and press the **Rotary Encoder** down.
 4.  **Verification:**
-    The device will **not** reboot automatically. To confirm that the reset was successful, watch for the RGB underglow to return to the default color **bright red**.
-
+    The device will not automatically reboot. To confirm that the reset was successful, watch for the RGB underglow to return to the default color **a bright red**.
 
 
 ## RGB Lighting & Layer Feedback

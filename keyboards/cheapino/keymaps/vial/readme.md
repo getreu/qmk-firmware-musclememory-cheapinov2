@@ -1,6 +1,6 @@
 # Cheapino Vial Configuration
 
-This firmware implements the [Muscle memory friendly home row mods layout](https://blog.getreu.net/20250826-muscle-memory-friendly-home-row-mods/). All defaults can be customized via [Vial](https://get.vial.today/).
+This firmware implements the [Muscle-memory-friendly home row mods layout](https://blog.getreu.net/20250826-muscle-memory-friendly-home-row-mods/). All defaults can be customized via [Vial](https://get.vial.today/).
 
 ## Compiling and Flashing
 
@@ -11,21 +11,16 @@ This firmware implements the [Muscle memory friendly home row mods layout](https
     git submodule update --init --recursive
     ```
 
-2.  **Copy Keyboard Folder:**
-    ```bash
-    cp -r /path/to/this/keyboards/cheapino vial-qmk/keyboards/
-    ```
-
 3.  **Compile:**
     ```bash
     make cheapino:vial
     ```
 
-4.  **Flash to Cheapino (RP2040):**
-    * **Method 1 (Physical Button):** Hold the right button on the RP2040 controller while 
-      plugging in the USB cable.
-    * **Method 2 (Keycode):** Press the `QK_BOOT` combination (**Q+W+E+T** or **Y+I+O+P**).
-    * Drag and drop the `.uf2` file onto the `RPI-RP2` drive.
+4.  **Flash to Cheapino (RP2040)**:
+    *   **Method 1 (Physical Button):** Hold the **BOOTSEL button** on the RP2040 controller while
+        plugging in the USB cable.
+    *   **Method 2 (Keycode):** Hold the middle thumb key on the left side and press the rotary knob.
+    *   Drag and drop the `.uf2` file onto the `RPI-RP2` drive.
 
 
 
@@ -36,16 +31,13 @@ Clearing the EEPROM resets all persistent settings (RGB configurations, Vial key
 In this firmware, the clear function is hard-mapped to specific keys to enable a reset without the GUI:
 
 1.  **Keycode Position:**
-    * **Layer 7:** The top-left key (corresponds to `Q` on the base layer).
-    * **Layer 5:** The **Rotary Encoder Press** (the physical button between the halves).
+    *   **Layer 5:** The **Rotary Encoder Press** (the physical button between the halves).
 2.  **Accessing the Layer:**
-    * **Layer 7:** Via a thumb combo: `Space + Enter`, `V + Space`, or `M + Enter`.
-    * **Layer 5:** Hold the **Backspace** thumb key on the right half.
+    *   **Layer 5:** Hold the **Backspace** thumb key on the right half.
 3.  **Triggering the Reset:**
-    * **Via Layer 7:** Hold the Layer 7 combo and tap **Q**.
-    * **Via Layer 5:** Hold the **Backspace** key and press the **Rotary Encoder** down.
+    *   **Via Layer 5:** Hold the **Backspace** key and press the **Rotary Encoder** down.
 4.  **Verification:**
-    The device will **not** reboot automatically. To confirm that the reset was successful, watch for the RGB underglow to return to the default color **bright red**.
+    The device will not automatically reboot. To confirm that the reset was successful, watch for the RGB underglow to return to the default color **a bright red**.
 
 
 
@@ -55,7 +47,7 @@ The underglow changes color based on the active layer:
 
 | Layer | Color | Purpose |
 |-------|-------|-------|
-| Base (_L0) | Custom | Main layer (restores the last saved color) |
+| Base (L0) | Custom | Main layer (restores the last saved color) |
 | L1 | (inherit) | Reserved / Unused |
 | L2 | Red | Numpad Layer |
 | L3 | Cyan | Numbers & Navigation |
@@ -64,8 +56,8 @@ The underglow changes color based on the active layer:
 | L6 | Mint | Mouse control |
 | L7 | Pink | RGB & Media control |
 
-If whished for, the led can be switched off for all layers(`RGB_TOG`, layer 7),
-or for the base layer only (`RGB_VAD`, layer 7).
+If wished for, the LEDs can be turned off for all layers (`RGB_TOG` on layer 7),
+or for the base layer only (`RGB_VAD` on layer 7).
 
 
 
@@ -79,12 +71,12 @@ or for the base layer only (`RGB_VAD`, layer 7).
 
 ## Troubleshooting
 
-* **Not recognized:** Ensure that you compiled with `vial-qmk`.
-* **Not saving:** Check if the keyboard was unlocked with **Q + P**.
-* **Firmware too large:** Activate `LTO_ENABLE = yes` in the `rules.mk`.
-
+*   **Not recognized:** Ensure that you compiled with `vial-qmk`.
+*   **Not saving:** Check if the keyboard was unlocked with **Q + P**.
+*   **Firmware too large:** Activate `LTO_ENABLE = yes` in the `rules.mk`.\
+    The `cheapino` uses an RP2040, which has limited flash memory.
 
 ## Credits
 
-* **Original musclememory keymap:** Custom home-row-mods layout Jens Getreu.
-* **Cheapino keyboard:** Thomas Haukland (@tompi).
+*   **Original muscle-memory keymap:** Custom home-row-mods layout by Jens Getreu.
+*   **Cheapino keyboard:** Thomas Haukland (@tompi).
