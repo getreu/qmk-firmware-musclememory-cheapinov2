@@ -1,8 +1,38 @@
-# Cheapino Vial Configuration
+# Cheapino Configuration
 
-This firmware implements the [Muscle memory friendly home row mods layout](https://blog.getreu.net/20250826-muscle-memory-friendly-home-row-mods/). All defaults can be customized via [Vial](https://get.vial.today/).
+This firmware implements the [Muscle memory friendly home row mods layout](https://blog.getreu.net/20250826-muscle-memory-friendly-home-row-mods/). 
 
 ## Compiling and Flashing
+
+### Using the QMK/QMK repository
+
+1.  **Clone and Setup:**
+    ```bash
+    git clone https://github.com/qmk/qmk_firmware.git
+    cd qmk-qmk
+    git submodule update --init --recursive
+    ```
+
+2.  **Copy Keyboard Folder:**
+    ```bash
+    cp -r /path/to/this/keyboards/cheapino qmk-qmk/keyboards/
+    ```
+
+3.  **Compile:**
+    ```bash
+    qmk compile -kb cheapino -km musclememory 
+    ```
+
+4.  **Flash to Cheapino (RP2040):**
+    * **Method 1 (Physical Button):** Hold the right button on the RP2040 controller while 
+      plugging in the USB cable.
+    * **Method 2 (Keycode):** Press the `QK_BOOT` combination (**Q+W+E+T** or **Y+I+O+P**).
+    * Drag and drop the `.uf2` file onto the `RPI-RP2` drive.
+
+
+### Using the Vial/QMK repository
+
+Alternatively, you can use the Vial/QMK repository to compile and flash.
 
 1.  **Clone and Setup:**
     ```bash
@@ -18,16 +48,10 @@ This firmware implements the [Muscle memory friendly home row mods layout](https
 
 3.  **Compile:**
     ```bash
-    make cheapino:vial
+    make cheapino:musclememory
     ```
 
-4.  **Flash to Cheapino (RP2040):**
-    * **Method 1 (Physical Button):** Hold the right button on the RP2040 controller while 
-      plugging in the USB cable.
-    * **Method 2 (Keycode):** Press the `QK_BOOT` combination (**Q+W+E+T** or **Y+I+O+P**).
-    * Drag and drop the `.uf2` file onto the `RPI-RP2` drive.
-
-
+### Using the QMK/QMK repository
 
 ## Clearing EEPROM
 
@@ -68,19 +92,8 @@ If whished for, the led can be switched off for all layers(`RGB_TOG`, layer 7),
 or for the base layer only (`RGB_VAD`, layer 7).
 
 
-
-
-## Using Vial GUI
-
-1.  **Download:** Download Vial from [get.vial.today](https://get.vial.today/).
-2.  **Security Unlock:** To change security-relevant settings, you must press the **Security Unlock Combo**: **Q + P** (top-left key + top-right key).
-3.  **Configuration:** Use the tabs for **Tap Dance** and **Combos** to customize the layout.
-
-
 ## Troubleshooting
 
-* **Not recognized:** Ensure that you compiled with `vial-qmk`.
-* **Not saving:** Check if the keyboard was unlocked with **Q + P**.
 * **Firmware too large:** Activate `LTO_ENABLE = yes` in the `rules.mk`.
 
 
