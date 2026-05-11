@@ -98,19 +98,20 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
  * TAP DANCE DEFINITION
  *
  */
-// TD_CMENU Logic:
-// - Base Layer: Single Tap/Hold = KC_APP | Double Tap = Toggle L2
+// - Base Layer: Single Tap = KC_APP | Hold = Activate L2 momentarily | Double Tap = Toggle L2
 // - Other Layers: Any interaction = layer_clear() (Reset to Base)
 enum { TD_CMENU };
+
 void td_cmenu_finished(tap_dance_state_t *state, void *user_data) {
-    // Check if we are currently on the Base Layer
     if (get_highest_layer(layer_state) == _BASE) {
         if (state->pressed) {
-            tap_code16(KC_APP);
+            // Hold = Momentarily activate L2
+            layer_on(_L2);
         } else {
+            // Tapped
             if (state->count == 1) {
                 tap_code16(KC_APP);
-            } else if (state->count == 2) {
+            } else if (state->count >= 2) {
                 layer_invert(_L2);
             }
         }
@@ -119,8 +120,17 @@ void td_cmenu_finished(tap_dance_state_t *state, void *user_data) {
         layer_clear();
     }
 }
+
+void td_cmenu_reset(tap_dance_state_t *state, void *user_data) {
+    // Only deactivate if count=1 AND we're on L2
+    // (count=1 & on L2 means it was a hold, not a toggle)
+    if (state->count == 1 && get_highest_layer(layer_state) == _L2) {
+        layer_off(_L2);
+    }
+}
+
 tap_dance_action_t tap_dance_actions[] = {
-    [TD_CMENU] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_cmenu_finished, NULL)
+    [TD_CMENU] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_cmenu_finished, td_cmenu_reset)
 };
 
 // PER-KEY TAPPING TERM
@@ -184,23 +194,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 
 [_L2] = LAYOUT_split_3x5_3(
-    KC_U,    KC_D,    KC_E,    KC_F,    KC_N,    KC_TRNS, KC_KP_MINUS, KC_KP_7, KC_KP_8, KC_KP_9, KC_KP_0,
-    KC_PSLS, KC_PAST, LT(_L3, KC_PEQL), KC_TAB, KC_BSPC, KC_NUM_LOCK, KC_KP_4, LT(_L3, KC_KP_5), KC_KP_6, KC_PENT,
-    KC_X,    KC_A,    KC_B,    KC_C,    LSFT(KC_SCLN), KC_KP_PLUS, KC_KP_1, KC_KP_2, KC_KP_3, KC_KP_DOT,
+    KC_NO,          KC_NO,          KC_NO,           KC_PEQL,        KC_PAST, KC_TRNS, KC_KP_PLUS,          KC_KP_7,         KC_KP_8,          KC_KP_9,         KC_KP_0,
+    LSFT_T(KC_ESC), RALT_T(KC_INS), LT(_L3, KC_DEL), LCTL_T(KC_TAB), LALT_T(KC_BSPC),  LALT_T(KC_NUM_LOCK), RCTL_T(KC_KP_4), LT(_L3, KC_KP_5), RALT_T(KC_KP_6), RSFT_T(KC_PENT),
+    KC_NO,          KC_NO,          KC_NO,           RGUI_T(KC_NO),  KC_PSLS,          KC_KP_MINUS,         RGUI_T(KC_KP_1), KC_KP_2,          KC_KP_3,         KC_KP_DOT,
     KC_TRNS, LT(_L6, KC_NO), KC_TRNS,           KC_TRNS, KC_TRNS, KC_TRNS
 ),
 
 [_L3] = LAYOUT_split_3x5_3(
-    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_TRNS, KC_6,    KC_7,    KC_8,    KC_9,    KC_0,
-    LSFT_T(KC_ESC), RALT_T(KC_INS), LT(_L3, KC_DEL), LCTL_T(KC_TAB), LALT_T(KC_BSPC), LALT_T(KC_LEFT), RCTL_T(KC_DOWN), LT(_L3, KC_UP), RALT_T(KC_RGHT), RSFT_T(KC_ENT),
-    KC_GRV,  KC_MINS, KC_EQL,  RGUI_T(KC_LBRC), KC_RBRC, KC_BSLS, RGUI_T(KC_QUOT), KC_COMM, KC_DOT, KC_SLSH,
+    KC_1,           KC_2,           KC_3,             KC_4,           KC_5,  KC_TRNS,  KC_6,            KC_7,            KC_8,          KC_9,            KC_0,
+    LSFT_T(KC_ESC), RALT_T(KC_INS), LT(_L3,KC_DEL),   LCTL_T(KC_TAB), LALT_T(KC_BSPC), LALT_T(KC_LEFT), RCTL_T(KC_DOWN), LT(_L3,KC_UP), RALT_T(KC_RGHT), RSFT_T(KC_ENT),
+    KC_GRV,         KC_MINS,        KC_EQL,           RGUI_T(KC_LBRC), KC_RBRC,        KC_BSLS,         RGUI_T(KC_QUOT), KC_COMM,       KC_DOT,          KC_SLSH,
     KC_TRNS, LT(_L6, KC_NO), KC_TRNS,           KC_TRNS, KC_TRNS, KC_TRNS
 ),
 
 [_L4] = LAYOUT_split_3x5_3(
-    KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   QK_REBOOT, KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,
-    LSFT_T(KC_F11), RALT_T(KC_F12), KC_F13, LCTL_T(KC_F14), LALT_T(KC_F15), LALT_T(KC_F16), RCTL_T(KC_F17), KC_F18, RALT_T(KC_F19), RSFT_T(KC_F20),
-    KC_F21,  KC_F22,  KC_F23,  RGUI_T(KC_F24), KC_NO,   KC_NO,   RGUI_T(KC_NO), KC_NO,   KC_NO,   KC_NO,
+    KC_F1,          KC_F2,          KC_F3,   KC_F4,           KC_F5,   QK_REBOOT, KC_F6,          KC_F7,          KC_F8,   KC_F9,          KC_F10,
+    LSFT_T(KC_F11), RALT_T(KC_F12), KC_F13,  LCTL_T(KC_F14),  LALT_T(KC_F15),     LALT_T(KC_F16), RCTL_T(KC_F17), KC_F18,  RALT_T(KC_F19), RSFT_T(KC_F20),
+    KC_F21,         KC_F22,         KC_F23,  RGUI_T(KC_F24),  KC_NO,              KC_NO,          RGUI_T(KC_NO),  KC_NO,   KC_NO,          KC_NO,
     KC_TRNS, LT(_L6, KC_NO), KC_TRNS,           KC_TRNS, KC_TRNS, KC_TRNS
 ),
 
@@ -208,21 +218,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,  QK_CLEAR_EEPROM,  KC_HOME, KC_DEL,  KC_INS,  KC_END,  KC_BSPC,
     KC_ESC,  KC_INS,  KC_DEL,  KC_TAB,  KC_BSPC,          KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_ENT,
     KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,            KC_NO,   KC_PGDN, KC_PGUP, KC_NO,   KC_NO,
-    KC_TRNS, TD(2), KC_TRNS,                              KC_TRNS, KC_TRNS, TD(1)
+    KC_TRNS, LT(_L6, KC_NO), KC_TRNS,           KC_TRNS, KC_TRNS, KC_TRNS
 ),
 
 [_L6] = LAYOUT_split_3x5_3(
     KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,  QK_BOOT,  KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
     MS_BTN5, MS_BTN1, MS_BTN3, MS_BTN2, MS_BTN4,          MS_LEFT, MS_DOWN, MS_UP,   MS_RGHT, MS_BTN1,
     KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,            MS_WHLL, MS_WHLD, MS_WHLU, MS_WHLR, KC_NO,
-    KC_TRNS, TD(2), KC_TRNS,                              KC_TRNS, KC_TRNS, TD(1)
+    KC_TRNS, LT(_L6, KC_NO), KC_TRNS,           KC_TRNS, KC_TRNS, KC_TRNS
 ),
 
 [_L7] = LAYOUT_split_3x5_3(
     QK_CLEAR_EEPROM, KC_NO, RGB_VAD, RGB_VAI, RGB_TOG, KC_NO, KC_NO,   KC_BRID, KC_BRIU, KC_NO,   KC_NO,
     QK_BOOT,         KC_NO, RGB_HUD, RGB_HUI, KC_NO,          KC_MUTE, KC_VOLD, KC_VOLU, KC_NO,   KC_NO,
     QK_REBOOT, KC_NO,   RGB_SAD, RGB_SAI, KC_NO,           KC_MPLY, KC_MPRV, KC_MNXT, KC_NO,   KC_NO,
-    KC_TRNS, TD(2), KC_TRNS,                              KC_TRNS, KC_TRNS, TD(1)
+    KC_TRNS, LT(_L6, KC_NO), KC_TRNS,           KC_TRNS, KC_TRNS, KC_TRNS
 )
 };
 
