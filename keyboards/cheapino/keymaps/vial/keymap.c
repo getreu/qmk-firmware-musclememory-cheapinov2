@@ -181,13 +181,18 @@ void eeconfig_init_user(void) {
     // 4. Load Dynamic Tap Dances
     vial_tap_dance_entry_t td = {0};
 
-    // TD 0: APP / TG(_L2)
-    td.on_tap = KC_APP; td.on_hold = KC_APP; td.on_double_tap = TG(_L2);
+    // Excerpt from: void eeconfig_init_user( )
+    // TD 0: APP / MO(_L2) momentary / TG(_L2) toggle
+    td.on_tap = KC_APP;
+    td.on_hold = MO(_L2);           // momentary L2
+    td.on_double_tap = TG(_L2);
     td.custom_tapping_term = 350;
     dynamic_keymap_set_tap_dance(0, &td);
 
-    // TD 1: TO(0) / TG(_L2)
-    td.on_tap = TO(0); td.on_hold = KC_APP; td.on_double_tap = TG(_L2);
+    // TD 1: TO(0) / MO(_L2) momentary / TG(_L2) toggle
+    td.on_tap = TO(0);
+    td.on_hold = MO(_L2);           // momentary L2
+    td.on_double_tap = TG(_L2);
     td.custom_tapping_term = 350;
     dynamic_keymap_set_tap_dance(1, &td);
 
@@ -226,23 +231,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 
 [_L2] = LAYOUT_split_3x5_3(
-    KC_U,    KC_D,    KC_E,             KC_F,    KC_N,    KC_TRNS, KC_PMNS, KC_P7,   KC_P8,         KC_P9,   KC_P0,
-    KC_PSLS, KC_PAST, LT(_L3,KC_PEQL),  KC_TAB,  KC_BSPC,          KC_NUM,  KC_P4,   LT(_L3,KC_P5), KC_P6,   KC_PENT,
-    KC_X,    KC_A,    KC_B,             KC_C,    LSFT(KC_SCLN),    KC_PPLS, KC_P1,   KC_P2,         KC_P3,   KC_PDOT,
+    KC_NO,          KC_NO,          KC_NO,           KC_PEQL,        KC_PAST, KC_TRNS, KC_KP_PLUS,          KC_KP_7,         KC_KP_8,          KC_KP_9,         KC_KP_0,
+    LSFT_T(KC_ESC), RALT_T(KC_INS), LT(_L3, KC_DEL), LCTL_T(KC_TAB), LALT_T(KC_BSPC),  LALT_T(KC_NUM_LOCK), RCTL_T(KC_KP_4), LT(_L3, KC_KP_5), RALT_T(KC_KP_6), RSFT_T(KC_PENT),
+    KC_NO,          KC_NO,          KC_NO,           RGUI_T(KC_NO),  KC_PSLS,          KC_KP_MINUS,         RGUI_T(KC_KP_1), KC_KP_2,          KC_KP_3,         KC_KP_DOT,
     KC_TRNS, TD(2), KC_TRNS,                              KC_TRNS, KC_TRNS, TD(1)
 ),
 
 [_L3] = LAYOUT_split_3x5_3(
-    KC_1,           KC_2,           KC_3,             KC_4,           KC_5,           KC_TRNS, KC_6,            KC_7,            KC_8,          KC_9,            KC_0,
-    LSFT_T(KC_ESC), RALT_T(KC_INS), LT(_L3,KC_DEL),   LCTL_T(KC_TAB), LALT_T(KC_BSPC),         LALT_T(KC_LEFT), RCTL_T(KC_DOWN), LT(_L3,KC_UP), RALT_T(KC_RGHT), RSFT_T(KC_ENT),
-    KC_GRV,         KC_MINS,        KC_EQL,           RGUI_T(KC_LBRC), KC_RBRC,                KC_BSLS,         RGUI_T(KC_QUOT), KC_COMM,       KC_DOT,          KC_SLSH,
+    KC_1,           KC_2,           KC_3,             KC_4,           KC_5,  KC_TRNS,  KC_6,            KC_7,            KC_8,          KC_9,            KC_0,
+    LSFT_T(KC_ESC), RALT_T(KC_INS), LT(_L3,KC_DEL),   LCTL_T(KC_TAB), LALT_T(KC_BSPC), LALT_T(KC_LEFT), RCTL_T(KC_DOWN), LT(_L3,KC_UP), RALT_T(KC_RGHT), RSFT_T(KC_ENT),
+    KC_GRV,         KC_MINS,        KC_EQL,           RGUI_T(KC_LBRC), KC_RBRC,        KC_BSLS,         RGUI_T(KC_QUOT), KC_COMM,       KC_DOT,          KC_SLSH,
     KC_TRNS, TD(2), KC_TRNS,                              KC_TRNS, KC_TRNS, TD(1)
 ),
 
 [_L4] = LAYOUT_split_3x5_3(
-    KC_F1,          KC_F2,          KC_F3,   KC_F4,           KC_F5,   QK_REBOOT, KC_F6,    KC_F7,   KC_F8,   KC_F9,          KC_F10,
-    LSFT_T(KC_F11), RALT_T(KC_F12), KC_F13,  LCTL_T(KC_F14),  KC_F15,           KC_F16,   KC_F17,  KC_F18,  RALT_T(KC_F19), RSFT_T(KC_F20),
-    KC_F21,         KC_F22,         KC_F23,  RGUI_T(KC_F24),  KC_NO,            KC_NO,    KC_NO,   KC_NO,   KC_NO,          KC_NO,
+    KC_F1,          KC_F2,          KC_F3,   KC_F4,           KC_F5,   QK_REBOOT, KC_F6,          KC_F7,          KC_F8,   KC_F9,          KC_F10,
+    LSFT_T(KC_F11), RALT_T(KC_F12), KC_F13,  LCTL_T(KC_F14),  LALT_T(KC_F15),     LALT_T(KC_F16), RCTL_T(KC_F17), KC_F18,  RALT_T(KC_F19), RSFT_T(KC_F20),
+    KC_F21,         KC_F22,         KC_F23,  RGUI_T(KC_F24),  KC_NO,              KC_NO,          RGUI_T(KC_NO),  KC_NO,   KC_NO,          KC_NO,
     KC_TRNS, TD(2), KC_TRNS,                              KC_TRNS, KC_TRNS, TD(1)
 ),
 
