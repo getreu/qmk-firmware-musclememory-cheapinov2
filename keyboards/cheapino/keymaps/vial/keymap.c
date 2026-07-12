@@ -150,11 +150,17 @@ void eeconfig_init_user(void) {
     combo.output = MO(_L7);
     dynamic_keymap_set_combo(2, &combo);
 
-    // Combo 3: ESC + Backspace -> Toggle Layer 3
+    // Combo 3: ESC + Backspace -> Go to Layer 3
     combo.input[0] = LT(_L6, KC_ESC);
     combo.input[1] = LT(_L5, KC_BSPC);
-    combo.output = TG(_L3);
+    combo.output = TO(_L3);
     dynamic_keymap_set_combo(3, &combo);
+
+    // Combo 6: TD(2) + Backspace -> Go to Layer 3 (stay in symbol layer from L3)
+    combo.input[0] = TD(2);
+    combo.input[1] = LT(_L5, KC_BSPC);
+    combo.output = TO(_L3);
+    dynamic_keymap_set_combo(6, &combo);
 
     // Combo 4 & 5: Outer thumbs -> Caps Lock
     combo.input[0] = OSL(_L4); combo.input[1] = TD(0);

@@ -354,7 +354,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * COMBOS
  * Combos allow triggering actions by pressing multiple keys simultaneously.
  * - combo1/2: Trigger Layer 7 (System settings).
- * - combo3: Toggle Layer 3.
+ * - combo3: Go to Layer 3.
  * - combo4/5: Reboot into Bootloader (Flash mode).
  * - combo_caps: Toggle Caps Lock.
  */
@@ -367,7 +367,7 @@ const uint16_t PROGMEM combo_caps[] = { OSL(_L4), TD(TD_CMENU), COMBO_END };
 combo_t key_combos[] = {
     COMBO(combo1, MO(_L7)),
     COMBO(combo2, MO(_L7)),
-    COMBO(combo3, TG(_L3)),
-    COMBO(combo4, TG(_L3)),
+    COMBO(combo3, TO(_L3)),
+    COMBO(combo4, TO(_L3)),
     COMBO(combo_caps, KC_CAPS)
 };
