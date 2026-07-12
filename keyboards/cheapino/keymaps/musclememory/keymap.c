@@ -215,17 +215,15 @@ void td_kp_plus_reset(tap_dance_state_t *state, void *user_data) {
 }
 
 void td_cmenu_finished(tap_dance_state_t *state, void *user_data) {
-    if (get_highest_layer(layer_state) == _BASE) {
+    if (!state->pressed && state->count >= 2) {
+        // Double tap always activates L2 exclusively, from any layer
+        layer_move(_L2);
+    } else if (get_highest_layer(layer_state) == _BASE) {
         if (state->pressed) {
             // Hold = Momentarily activate L2
             layer_on(_L2);
         } else {
-            // Tapped
-            if (state->count == 1) {
-                tap_code16(KC_APP);
-            } else if (state->count >= 2) {
-                layer_invert(_L2);
-            }
+            tap_code16(KC_APP);
         }
     } else {
         // If we are on ANY other layer, reset everything to Base
