@@ -165,16 +165,6 @@ void eeconfig_init_user(void) {
     combo.output = KC_CAPS_LOCK;
     dynamic_keymap_set_combo(5, &combo);
 
-    // Combo 6: Q+W+E+T -> Bootloader
-    combo.input[0] = KC_Q; combo.input[1] = KC_W; combo.input[2] = KC_E; combo.input[3] = KC_T;
-    combo.output = QK_BOOT;
-    dynamic_keymap_set_combo(6, &combo);
-
-    // Combo 7: Y+I+O+P -> Bootloader
-    combo.input[0] = KC_Y; combo.input[1] = KC_I; combo.input[2] = KC_O; combo.input[3] = KC_P;
-    combo.output = QK_BOOT;
-    dynamic_keymap_set_combo(7, &combo);
-
 #endif
 
 #ifdef VIAL_TAP_DANCE_ENABLE
