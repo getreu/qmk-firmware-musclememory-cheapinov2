@@ -21,6 +21,11 @@
 // #define TAPPING_TERM 170
 #define TAPPING_TERM 170
 
+// Short combo window so combo-member keys (e.g. TD(0), the right outer thumb,
+// used by the OSL(_L4)+TD(0) CapsLock combo) are not buffered long enough to
+// break their tap-dance double-tap. Defaults to TAPPING_TERM (170) otherwise.
+#define COMBO_TERM 50
+
 // Auto Shift
 #define NO_AUTO_SHIFT_ALPHA
 #define AUTO_SHIFT_TIMEOUT TAPPING_TERM
