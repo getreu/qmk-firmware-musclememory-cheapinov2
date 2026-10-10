@@ -13,3 +13,9 @@
 
 #define RP2040_BOOTLOADER_DOUBLE_TAP_RESET
 #define RP2040_BOOTLOADER_DOUBLE_TAP_RESET_TIMEOUT 500U
+
+// Home row mods resolve by the opposite-hands rule: a tap-hold key settles
+// as TAPPED when the next key is on the same hand. Handedness map and the
+// same-hand exceptions are in chordal_hold.c. Ported from
+// qmk-vial-src-musclememory-cheapino2 v1.5.0.
+#define CHORDAL_HOLD
