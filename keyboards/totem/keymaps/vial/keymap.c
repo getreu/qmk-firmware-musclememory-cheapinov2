@@ -43,10 +43,10 @@ void eeconfig_init_user(void) {
     // Load Dynamic Combos (these write to EEPROM)
     vial_combo_entry_t combo = {0};
 
-    // Combo 0: Space + Enter -> Layer 7
-    combo.input[0] = LGUI_T(KC_SPC);
-    combo.input[1] = LGUI_T(KC_ENT);
-    combo.output = MO(_L7);
+    // Combo 0: Comma + Dot -> Go to Layer 2 (numpad)
+    combo.input[0] = KC_COMM;
+    combo.input[1] = KC_DOT;
+    combo.output = TO(_L2);
     dynamic_keymap_set_combo(0, &combo);
 
     // Combo 1: V + Space -> Layer 7
